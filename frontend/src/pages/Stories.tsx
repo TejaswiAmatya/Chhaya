@@ -97,7 +97,7 @@ export function Stories() {
         </main>
 
         {/* Right sidebar — hidden below lg */}
-        <aside className="hidden lg:block w-[180px] shrink-0 sticky top-12 h-[calc(100vh-48px)] overflow-y-auto">
+        <aside className="hidden lg:block w-[260px] shrink-0 sticky top-12 h-[calc(100vh-48px)] overflow-y-auto">
           <RightSidebar />
         </aside>
       </div>
