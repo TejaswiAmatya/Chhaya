@@ -13,9 +13,15 @@ import { swaggerSpec } from './config/swagger'
 const app = express()
 const PORT = process.env.PORT || 3001
 
+const corsOrigin =
+  process.env.CLIENT_URL ||
+  (process.env.NODE_ENV !== 'production'
+    ? /^http:\/\/localhost:\d+$/
+    : 'http://localhost:5173')
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: corsOrigin,
     credentials: true,
   }),
 )

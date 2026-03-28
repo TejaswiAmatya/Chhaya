@@ -14,7 +14,9 @@
       "Bash(grep -E \"\\\\.\\(ts|tsx|js|json|prisma\\)$\")",
       "Bash(/Users/abiralshrestha/Documents/WebDev/Projects/MeriKatha/frontend/src/App.tsx:*)",
       "Bash(python3:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git pull:*)"
     ]
   }
 }
