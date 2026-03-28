@@ -1,10 +1,15 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-const contacts = [
+const nepalContacts = [
   { name: 'Saathi Nepal', number: '01-4268474' },
   { name: 'TPO Nepal',    number: '01-4423596' },
-  { name: 'Emergency',   number: '100' },
+  { name: 'Emergency',    number: '100' },
+]
+
+const usContacts = [
+  { name: '988 Crisis Lifeline',  number: '988' },
+  { name: 'DV Hotline',           number: '1-800-799-7233' },
 ]
 
 export function SOSButton() {
@@ -35,8 +40,23 @@ export function SOSButton() {
               Yahan kehi resources chan jo tero sath huncha:
             </p>
 
-            <div className="flex flex-col gap-3 mb-5">
-              {contacts.map((r) => (
+            <p className="text-[9px] tracking-widest uppercase text-textMuted mb-2">NEPAL</p>
+            <div className="flex flex-col gap-2 mb-4">
+              {nepalContacts.map((r) => (
+                <a
+                  key={r.number}
+                  href={`tel:${r.number}`}
+                  className="flex items-center justify-between bg-feedBg rounded-xl px-4 py-3 border border-sand hover:border-textMuted transition-colors"
+                >
+                  <span className="text-sm font-semibold text-ink font-sans">{r.name}</span>
+                  <span className="text-sm text-sindoor font-semibold font-sans">{r.number}</span>
+                </a>
+              ))}
+            </div>
+
+            <p className="text-[9px] tracking-widest uppercase text-textMuted mb-2">US</p>
+            <div className="flex flex-col gap-2 mb-5">
+              {usContacts.map((r) => (
                 <a
                   key={r.number}
                   href={`tel:${r.number}`}
