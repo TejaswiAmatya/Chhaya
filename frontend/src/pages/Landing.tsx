@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { DhakaBand } from '../components/ui/DhakaBand'
 import { useReveal } from '../hooks/useReveal'
+import { useAuth } from '../context/AuthContext'
 
 // ---------------------------------------------------------------------------
 // Wisdom cards — date-indexed, changes daily, no backend needed
@@ -167,8 +168,14 @@ const features = [
 // Landing component
 // ---------------------------------------------------------------------------
 export function Landing() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const [lang, setLang] = useState<Lang>('np')
   const [visible, setVisible] = useState(true)
+
+  function handleEnterChhaya() {
+    navigate(user ? '/feed' : '/signup')
+  }
 
   const [featuresRef, featuresRevealed] = useReveal<HTMLDivElement>()
   const [circlesRef, circlesRevealed]   = useReveal<HTMLDivElement>()
@@ -206,13 +213,13 @@ export function Landing() {
             {lang === 'np' ? 'EN' : 'नेपाली'}
           </button>
 
-          <Link
-            to="/feed"
+          <button
+            onClick={handleEnterChhaya}
             className="bg-ink text-pageBg rounded-full px-4 py-1.5 text-xs font-semibold font-sans hover:opacity-90 transition-opacity flex items-center gap-1.5"
           >
             <span className="w-1.5 h-1.5 bg-sindoor rounded-full animate-pulse shrink-0" />
             {s.navCta}
-          </Link>
+          </button>
         </div>
       </header>
 
@@ -247,13 +254,13 @@ export function Landing() {
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3">
-              <Link
-                to="/feed"
+              <button
+                onClick={handleEnterChhaya}
                 className="bg-ink text-pageBg rounded-full px-8 py-3 font-semibold font-sans text-sm inline-flex items-center gap-2 hover:opacity-90 transition-opacity"
               >
                 <span className="w-2 h-2 bg-sindoor rounded-full animate-pulse shrink-0" />
                 {s.heroCta}
-              </Link>
+              </button>
               <p className="text-xs text-textMuted font-sans">
                 {s.heroSubtext}
               </p>
