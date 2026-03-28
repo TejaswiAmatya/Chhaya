@@ -11,3 +11,10 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Story {
+  id          String   @id @default(cuid())
+  content     String
+  suneinCount Int      @default(0)
+  createdAt   DateTime @default(now())
+}
