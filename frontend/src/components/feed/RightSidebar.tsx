@@ -7,10 +7,13 @@ export function RightSidebar() {
   return (
     <div className="p-3 flex flex-col gap-3">
       {/* SOS Sahara badge */}
-      <div className="bg-sindoor rounded-xl p-2.5 flex items-center gap-2">
+      <button
+        onClick={() => navigate('/sahara')}
+        className="bg-sindoor rounded-xl p-2.5 flex items-center gap-2 w-full hover:opacity-90 transition-opacity"
+      >
         <span className="w-2 h-2 bg-white rounded-full animate-pulse shrink-0" />
         <span className="text-xs font-semibold text-white">सहारा · Need support?</span>
-      </div>
+      </button>
 
       {/* Trending Circles */}
       <div className="bg-cardWhite border border-sand rounded-xl p-3">
