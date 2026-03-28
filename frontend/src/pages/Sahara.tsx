@@ -45,7 +45,7 @@ export function Sahara() {
           Timi eklai chaina.
         </h1>
         <p className="text-sm text-textBody leading-relaxed mb-6">
-          Yiniharu tiro kura sunna tayyar chan. Call garna hesitate nagara — yo bravery ho.
+          Yiniharu tapaiko kura sunna tayyar chan. Call garna hesitate nagara — yo bravery ho.
         </p>
 
         <DhakaBand />
@@ -117,7 +117,7 @@ export function Sahara() {
         {/* Footer note */}
         <div className="bg-feedBg rounded-xl p-4 border border-sand text-center">
           <p className="text-xs text-textBody leading-relaxed">
-            Tero kura sunna yiniharu sada tayyar chan. Yo "crisis" hoina — yo care ho. 🙏
+            Yiniharu tapaiko kura sunna tayyar chan. Yo "crisis" hoina — yo care ho. 🙏
           </p>
         </div>
       </div>
