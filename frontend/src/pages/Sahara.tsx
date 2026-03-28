@@ -9,10 +9,17 @@ const nepalResources = [
   { name: "Women's Police Cell", contact: '100',        desc: 'Emergency' },
 ]
 
-const diasporaResources = [
-  { country: 'USA',       contact: '988',        name: 'Crisis lifeline' },
-  { country: 'UK',        contact: '116 123',    name: 'Samaritans' },
-  { country: 'Australia', contact: '13 11 14',   name: 'Lifeline' },
+const usResources = [
+  { name: '988 Suicide & Crisis Lifeline', contact: '988',            desc: 'Call or text — 24/7' },
+  { name: 'National DV Hotline',           contact: '1-800-799-7233', desc: 'Domestic violence support' },
+  { name: 'RAINN',                         contact: '1-800-656-4673', desc: 'Sexual assault helpline' },
+  { name: 'Crisis Text Line',              contact: '741741',         desc: 'Text HOME to 741741' },
+  { name: 'API-GBV (Asian/Pacific Women)', contact: '1-877-942-7474', desc: 'South Asian community support' },
+]
+
+const otherDiasporaResources = [
+  { country: 'UK',        contact: '116 123',  name: 'Samaritans' },
+  { country: 'Australia', contact: '13 11 14', name: 'Lifeline' },
 ]
 
 export function Sahara() {
@@ -65,11 +72,33 @@ export function Sahara() {
 
         <DhakaBand className="my-6" />
 
-        {/* Diaspora */}
-        <div className="mb-8">
-          <p className="text-[9px] tracking-widest uppercase text-textMuted mb-3">DIASPORA</p>
+        {/* US resources */}
+        <div className="mb-2">
+          <p className="text-[9px] tracking-widest uppercase text-textMuted mb-3">UNITED STATES</p>
           <div className="flex flex-col gap-2">
-            {diasporaResources.map((r) => (
+            {usResources.map((r) => (
+              <a
+                key={r.contact}
+                href={r.contact === '741741' ? 'sms:741741&body=HOME' : `tel:${r.contact}`}
+                className="bg-pageBg border border-sand rounded-xl px-4 py-3 flex items-center justify-between hover:border-textMuted transition-colors"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-ink">{r.name}</p>
+                  <p className="text-xs text-textMuted mt-0.5">{r.desc}</p>
+                </div>
+                <span className="text-sm font-semibold text-sindoor shrink-0 ml-3">{r.contact}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <DhakaBand className="my-6" />
+
+        {/* Other diaspora */}
+        <div className="mb-8">
+          <p className="text-[9px] tracking-widest uppercase text-textMuted mb-3">OTHER DIASPORA</p>
+          <div className="flex flex-col gap-2">
+            {otherDiasporaResources.map((r) => (
               <a
                 key={r.contact}
                 href={`tel:${r.contact}`}
