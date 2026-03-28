@@ -15,6 +15,7 @@
   "include": [
     "prisma.config.ts",
     "index.ts",
+    "config/**/*",
     "controllers/**/*",
     "routes/**/*",
     "schema/**/*",
