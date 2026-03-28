@@ -1,16 +1,23 @@
 import { useNavigate } from 'react-router-dom'
 import { circles } from '../../data/mockStories'
 import { DhakaBand } from '../ui/DhakaBand'
+import { DiyoBaln } from './DiyoBaln'
 
 export function RightSidebar() {
   const navigate = useNavigate()
   return (
     <div className="p-3 flex flex-col gap-3">
-      {/* SOS Sahara badge */}
-      <div className="bg-sindoor rounded-xl p-2.5 flex items-center gap-2">
+      {/* SOS Sahara badge — links to Sahara page */}
+      <div
+        onClick={() => navigate('/sahara')}
+        className="bg-sindoor rounded-xl p-2.5 flex items-center gap-2 cursor-pointer hover:opacity-90 transition-opacity"
+      >
         <span className="w-2 h-2 bg-white rounded-full animate-pulse shrink-0" />
         <span className="text-xs font-semibold text-white">सहारा · Need support?</span>
       </div>
+
+      {/* Diyo Baln widget */}
+      <DiyoBaln />
 
       {/* Trending Circles */}
       <div className="bg-cardWhite border border-sand rounded-xl p-3">

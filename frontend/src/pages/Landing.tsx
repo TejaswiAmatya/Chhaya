@@ -137,7 +137,7 @@ const features = [
     icon: '🙏',
     titleDev: 'आँगन बोट',
     titleEn: 'Aangan Bot',
-    desc: 'Timro kura sunne ko lagi cha. Kei bhannu cha? Yahan koi judgment chaina.',
+    desc: 'Timro kura sunne ko lagi ma chu. Kei bhannu cha? Yaha koi judgment chaina.',
     descEn: 'Someone to listen. Say anything. No judgment here.',
     preview: (
       <div className="bg-cardWhite rounded-xl rounded-tl-sm p-3 mt-3 text-xs text-textBody leading-relaxed font-sans border border-sand">
