@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLang } from "../../context/LangContext";
 import { THEMES } from "../../data/themes";
 import type { ThemeValue } from "../../data/themes";
@@ -20,6 +20,7 @@ export function StoryInput({
   onOpenChange?: (open: boolean) => void;
 }) {
   const { lang } = useLang();
+  const navigate = useNavigate();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = controlledOpen ?? internalOpen;
   const setOpen = (next: boolean) => {
@@ -120,6 +121,7 @@ export function StoryInput({
 
       onSubmit(fullContent, theme as ThemeValue);
       close();
+      navigate('/feed');
     } catch {
       setError("Server sanga connect huna sakena. Feri try garnus.");
     } finally {

@@ -14,6 +14,12 @@ export function LeftSidebar() {
   const { lang } = useLang()
   const { user } = useAuth()
   const [joinedIds, setJoinedIds] = useState<string[]>([])
+  const [showComingSoon, setShowComingSoon] = useState(false)
+
+  function triggerComingSoon() {
+    setShowComingSoon(true)
+    setTimeout(() => setShowComingSoon(false), 2500)
+  }
 
   useEffect(() => {
     if (!user) return
@@ -26,7 +32,7 @@ export function LeftSidebar() {
   const navItems = [
     { label: 'गृहपृष्ठ', labelEn: 'Home', icon: '🏠', active: !isTrending, onClick: () => navigate('/feed') },
     { label: 'लोकप्रिय', labelEn: 'Popular', icon: '🔥', active: isTrending, onClick: () => navigate('/feed?trending=true') },
-    { label: 'अन्वेषण', labelEn: 'Explore', icon: '🧭', active: false, onClick: () => {} },
+    { label: 'अन्वेषण', labelEn: 'Explore', icon: '🧭', active: false, onClick: triggerComingSoon },
   ]
 
   return (
@@ -72,6 +78,14 @@ export function LeftSidebar() {
           Safe to open in front of family
         </p>
       </div>
+
+      {/* Coming Soon toast */}
+      {showComingSoon && (
+        <div className="fixed bottom-20 left-4 z-50 flex items-center gap-2 bg-ink text-pageBg text-xs font-medium px-4 py-2.5 rounded-xl shadow-lg animate-fadeUp">
+          <span>🧭</span>
+          <span>{lang === 'en' ? 'Explore — coming soon!' : 'अन्वेषण — चाँडै आउँदैछ!'}</span>
+        </div>
+      )}
     </nav>
   )
 }
