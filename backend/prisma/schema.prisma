@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -18,11 +15,28 @@ model User {
 }
 
 model Story {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   content     String
-  isAnonymous Boolean  @default(true)
-  status      String   @default("APPROVED") // APPROVED | DELETED
-  flagCode    String?                        // CRISIS_CONTENT | ABUSIVE_CONTENT
-  suneinCount Int      @default(0)
-  createdAt   DateTime @default(now())
+  suneinCount Int       @default(0)
+  createdAt   DateTime  @default(now())
+  flagCode    String?
+  isAnonymous Boolean   @default(true)
+  status      String    @default("APPROVED")
+  audioBase64 String?
+  Comment     Comment[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Comment {
+  id            String    @id
+  content       String
+  isAnonymous   Boolean   @default(true)
+  storyId       String
+  createdAt     DateTime  @default(now())
+  likeCount     Int       @default(0)
+  parentId      String?
+  suneinCount   Int       @default(0)
+  Comment       Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
+  other_Comment Comment[] @relation("CommentToComment")
+  Story         Story     @relation(fields: [storyId], references: [id], onDelete: Cascade)
 }

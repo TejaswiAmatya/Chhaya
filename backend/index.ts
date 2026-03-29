@@ -1,13 +1,16 @@
 // Must be set before any TLS connections (dev with Supabase pooler)
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
-import 'dotenv/config'
+import dotenv from 'dotenv'
+dotenv.config({ override: true })
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import swaggerUi from 'swagger-ui-express'
 import authRouter from './routes/auth'
 import meriKathaRouter from './routes/meriKathaRoutes'
+import translateRouter from './routes/translate'
+import moderateRouter from './routes/moderate'
 import { swaggerSpec } from './config/swagger'
 
 const app = express()
@@ -31,6 +34,8 @@ app.use(cookieParser())
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 app.use('/api/auth', authRouter)
 app.use('/api', meriKathaRouter)
+app.use('/api', translateRouter)
+app.use('/api', moderateRouter)
 
 app.get('/', (_req, res) => {
   res.json({ success: true, data: { message: 'MannSathi API — Namaste 🙏' } })

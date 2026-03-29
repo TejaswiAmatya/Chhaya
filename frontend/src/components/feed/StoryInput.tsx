@@ -42,6 +42,11 @@ export function StoryInput({ onSubmit }: { onSubmit: (text: string) => void }) {
         )
       }
 
+      // AI moderation nudge (warm, non-blocking)
+      if (data.aiNudge) {
+        setFlagWarning(data.aiNudge)
+      }
+
       setText('')
       onSubmit(trimmed)
     } catch {

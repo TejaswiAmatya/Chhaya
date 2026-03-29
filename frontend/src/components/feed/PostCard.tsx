@@ -4,11 +4,21 @@ import type { Story } from '../../types/feed'
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
 import { circles, relativeTime } from '../../data/mockStories'
 
+/** Simple heuristic: if text contains Devanagari chars, it's Nepali → translate to English */
+function detectTargetLang(text: string): 'en' | 'ne' {
+  return /[\u0900-\u097F]/.test(text) ? 'en' : 'ne'
+}
+
 export function PostCard({ story }: { story: Story }) {
   const [listened, setListened] = useState(false)
   const [voted, setVoted] = useState(false)
   const [ripplePos, setRipplePos] = useState<{ x: number; y: number } | null>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
+
+  // Translation state
+  const [translatedBody, setTranslatedBody] = useState<string | null>(null)
+  const [showTranslated, setShowTranslated] = useState(false)
+  const [translating, setTranslating] = useState(false)
 
   const circle = circles.find((c) => c.id === story.circleId)
   const voteCount = voted ? story.votes + 1 : story.votes
@@ -27,6 +37,34 @@ export function PostCard({ story }: { story: Story }) {
       })
     } catch (err) {
       console.error('Error incrementing sunein:', err)
+    }
+  }
+
+  async function handleTranslate() {
+    // If already translated, just toggle display
+    if (translatedBody) {
+      setShowTranslated((prev) => !prev)
+      return
+    }
+
+    setTranslating(true)
+    try {
+      const targetLang = detectTargetLang(story.body)
+      const res = await fetch(`${API}/api/translate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ text: story.body, targetLang }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setTranslatedBody(data.data.translated)
+        setShowTranslated(true)
+      }
+    } catch (err) {
+      console.error('Translation error:', err)
+    } finally {
+      setTranslating(false)
     }
   }
 
@@ -64,6 +102,18 @@ export function PostCard({ story }: { story: Story }) {
         {story.body}
       </p>
 
+      {/* Translated text */}
+      {showTranslated && translatedBody && (
+        <div className="mt-1.5 p-2 rounded-lg bg-marigold/10 border border-marigold/20">
+          <span className="text-[9px] text-textMuted font-semibold uppercase tracking-wide">
+            Translated
+          </span>
+          <p className="text-xs text-textBody leading-relaxed mt-0.5 italic">
+            {translatedBody}
+          </p>
+        </div>
+      )}
+
       {/* Tags */}
       {story.tags.length > 0 && (
         <div className="flex gap-1 mt-2 flex-wrap">
@@ -92,6 +142,26 @@ export function PostCard({ story }: { story: Story }) {
         <button className="flex items-center gap-1 bg-feedBg rounded-full px-2.5 py-1 text-xs text-textBody hover:bg-sand/50 transition-colors">
           <span className="text-sm">💬</span>
           {story.comments}
+        </button>
+
+        {/* Translate */}
+        <button
+          onClick={handleTranslate}
+          disabled={translating}
+          className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors ${
+            showTranslated
+              ? 'bg-marigold/20 text-marigold border border-marigold/30'
+              : 'bg-feedBg text-textBody hover:bg-sand/50'
+          }`}
+        >
+          {translating ? (
+            <span className="text-textMuted">Anuwad gardai...</span>
+          ) : (
+            <>
+              <span className="text-sm">अ/A</span>
+              {showTranslated ? 'Original' : 'Translate'}
+            </>
+          )}
         </button>
 
         {/* Maile Sunein */}

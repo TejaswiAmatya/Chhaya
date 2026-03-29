@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import { storySchema } from "../schema/storySchema";
 import { checkStoryContent } from "../src/storyContentCheck";
+import { aiModerateContent } from "../src/aiModeration";
 
 export const getStories = async (_req: Request, res: Response) => {
   try {
@@ -53,6 +54,23 @@ export const setStories = async (req: Request, res: Response) => {
       });
     }
 
+    // Layer 2: AI moderation (non-blocking enhancement)
+    const aiResult = await aiModerateContent(content);
+
+    if (aiResult.crisis) {
+      // AI caught crisis intent that regex missed — block + show resources
+      await prisma.story.create({
+        data: { ...parsed.data, status: "DELETED", flagCode: "CRISIS_CONTENT" },
+      });
+      return res.status(422).json({
+        success: false,
+        data: null,
+        error:
+          "Tapaiko kura mahatwako cha. Sahara maa sampark garna saknuhuncha.",
+        showResources: true,
+      });
+    }
+
     const story = await prisma.story.create({
       data: {
         ...parsed.data,
@@ -63,6 +81,7 @@ export const setStories = async (req: Request, res: Response) => {
       success: true,
       data: story,
       flags: check.flags,
+      aiNudge: aiResult.nudge ?? null,
     });
   } catch {
     res.status(500).json({
