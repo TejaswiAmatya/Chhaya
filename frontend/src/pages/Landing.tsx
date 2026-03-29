@@ -217,6 +217,13 @@ const features = [
   },
 ];
 
+const featureRoutes: Record<string, string> = {
+  katha: '/feed',
+  mausam: '/feed',
+  bot: '/bot',
+  diyo: '/diyo',
+}
+
 // ---------------------------------------------------------------------------
 // Landing component
 // ---------------------------------------------------------------------------
@@ -386,7 +393,7 @@ export function Landing() {
 
                   {/* CTA pill */}
                   <Link
-                    to="/stories"
+                    to={featureRoutes[f.id] ?? '/feed'}
                     className={`${f.pillClass} rounded-full px-3 py-1.5 text-[10px] font-semibold font-sans mt-4 inline-block text-center hover:opacity-90 transition-opacity`}
                   >
                     {lang === "np" ? f.pillText : f.pillTextEn}
