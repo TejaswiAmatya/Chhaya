@@ -32,22 +32,29 @@ function pickRandom(pool: Quote[]): Quote {
 
 async function aiReflection(mood: Mood, quote: Quote): Promise<string> {
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
     const res = await fetch(`${API}/api/bot/mood-reflection`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
+      signal: controller.signal,
       body: JSON.stringify({
         mood,
         quoteText: quote.text,
         quoteAuthor: quote.author,
       }),
     });
+
+    clearTimeout(timeout);
+
     const data = await res.json();
     if (data.success && data.data.reply) {
       return data.data.reply.trim();
     }
-  } catch {
-    // Fall through to hardcoded
+  } catch (err) {
+    // Timeout, network error, or parsing error — use fallback
   }
   return FALLBACK_REFLECTIONS[mood];
 }
