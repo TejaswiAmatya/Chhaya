@@ -21,6 +21,7 @@ export function StoryInput({
   onOpenChange?: (open: boolean) => void;
 }) {
   const { lang } = useLang();
+  const navigate = useNavigate();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = controlledOpen ?? internalOpen;
   const setOpen = (next: boolean) => {
@@ -289,6 +290,7 @@ export function StoryInput({
 
       onSubmit(fullContent, theme as ThemeValue, audioBase64 ?? undefined);
       close();
+      navigate('/feed');
     } catch {
       setError("Server sanga connect huna sakena. Feri try garnus.");
     } finally {
