@@ -1,18 +1,21 @@
 # Project: CHAYA (TEAM 74)
+
 # Event: Nepal‑US Hackathon 2026
-A warm space for South Asian women — to share, to feel, and to be heard. No judgment. No login. Just didi energy.
----
+
+## A warm space for South Asian women — to share, to feel, and to be heard. No judgment. No login. Just didi energy.
+
 # Core Development Team
 
-| **Name** | **Role** | **Key Contributions** | **Expertise** |
-|------------|----------|-----------------------|---------------|
-| [@Abiralstha99] | Lead Developer | Core architecture & backend implementation| Python, Backend Systems, Database Design |
-| [@TejaswiAmatya]| Project Architect | Project initialization, technical strategy & Feature development  | Systems Design, Project Management, Backend |
-| [@La-Lhakpa] | Technical Writer |Feature development & developer guides | Technical Documentation, Frontend, Testing|
-| [@KungaLama] | Full-Stack Engineer | Feature development, bug fixes & performance optimization | Frontend, Backend, Testing |
-| @Rob Basnet | DevOps/Infrastructure | deployment automation & infrastructure management | Docker, Vercel, GitHub Actions |
+| **Name**         | **Role**              | **Key Contributions**                                            | **Expertise**                               |
+| ---------------- | --------------------- | ---------------------------------------------------------------- | ------------------------------------------- |
+| [@Abiralstha99]  | Lead Developer        | Core architecture & backend implementation                       | Python, Backend Systems, Database Design    |
+| [@TejaswiAmatya] | Project Architect     | Project initialization, technical strategy & Feature development | Systems Design, Project Management, Backend |
+| [@La-Lhakpa]     | Technical Writer      | Feature development & developer guides                           | Technical Documentation, Frontend, Testing  |
+| [@KungaLama]     | Full-Stack Engineer   | Feature development, bug fixes & performance optimization        | Frontend, Backend, Testing                  |
+| @Rob Basnet      | DevOps/Infrastructure | deployment automation & infrastructure management                | Docker, Vercel, GitHub Actions              |
 
 # Presentation prepared by all team members and Presented by @TejaswiAmatya!
+
 ## Docker Quickstart
 
 ```bash
@@ -36,18 +39,21 @@ Detailed guide: see [`DOCKER_DEPLOY.md`](./DOCKER_DEPLOY.md).
 - **Browse** the latest 50 stories from the community
 - **Sunein** ("I heard you") a story — a one-tap acknowledgement that replaces likes
 
-
 ---
+
 ### Features
 
 ### 📖 **Meri Katha** — Story Sharing
-- **Share** a short anonymous story (10–500 characters)
+
+- **Share** a short anonymous story (10–500 characters) — text or voice recording
 - **Browse** the latest 50 community stories, newest first
 - **Sunein** ("I heard you") a story — a one-tap acknowledgement that replaces likes
 - **Comment** — leave a comment under a story
+- **Bilingual feed** — toggle between English and South Asian languages; stories auto-translate via Groq API (llama-3.3-70b-versatile)
 - Completely anonymous — no accounts, no authentication needed
 
 ### 🙏 **Aangan Bot** — Peer Companion Chat
+
 - **Talk to a caring AI didi** (elder sister) — someone to listen without judgment
 - **Built on Groq LLM** — fast, warm, culturally fluent responses in South Asian languages
 - **Mirror your language** — respond in Hindi, English, Urdu, Bengali, or codemixed based on how you write
@@ -56,33 +62,40 @@ Detailed guide: see [`DOCKER_DEPLOY.md`](./DOCKER_DEPLOY.md).
 - Chat history is kept during your session; completely anonymous
 
 **Backend Endpoint:**
+
 - `POST /api/bot/chat` — Send message, receive Aangan Bot response
 
 ### 🪔 **Diyo** — Light a Virtual Prayer
+
 - **Light a virtual diyo** (oil lamp) — set a private intention, wish, or fear
-- **Release anonymously** — share your intention on the community prayer wall
+- **Add an affirmation** — leave a warm message on someone else's diyo
 - **See the flame grow** — diyos glow brighter as more affirmations are added
 - Warm, minimal design with flickering flame animations
+- Frontend-only feature; diyo data is seeded locally (no backend endpoints)
 
-**Backend Endpoints:**
-- `GET /api/diyos` — Fetch public diyos (newest 30, with affirmations)
-- `POST /api/diyos` — Create a new public diyo
+### 🤝 **Sahara** — Crisis Resources Directory
+
+- **Curated helplines** for Nepal, the United States, UK, and Australia
+- One-tap **call or text** directly from the page (tel/sms links)
+- Covers domestic violence, sexual assault, and general crisis support
+- Resources include South Asian community-specific lines (e.g. API-GBV)
+- Always accessible — reachable from the bottom nav on any page via the **सहारा** button
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Runtime | Node.js |
-| Framework | Express 5 |
-| Language | TypeScript (strict mode) |
-| Database | Supabase (PostgreSQL) |
-| ORM | Prisma 7 (with `@prisma/adapter-pg`) |
-| Validation | Zod 4 |
-| AI / LLM | Groq (for Aangan Bot) |
-| API Docs | Swagger UI (`swagger-jsdoc` + `swagger-ui-express`) |
-| Dev Server | `ts-node-dev` |
+| Layer      | Technology                                          |
+| ---------- | --------------------------------------------------- |
+| Runtime    | Node.js                                             |
+| Framework  | Express 5                                           |
+| Language   | TypeScript (strict mode)                            |
+| Database   | Supabase (PostgreSQL)                               |
+| ORM        | Prisma 7 (with `@prisma/adapter-pg`)                |
+| Validation | Zod 4                                               |
+| AI / LLM   | Groq — `llama-3.3-70b-versatile` (Aangan Bot + translation) |
+| API Docs   | Swagger UI (`swagger-jsdoc` + `swagger-ui-express`) |
+| Dev Server | `ts-node-dev`                                       |
 
 ---
 
@@ -169,6 +182,7 @@ PORT=3001
 ```
 
 **Where to find these values:**
+
 1. Go to your Supabase project dashboard
 2. Navigate to **Settings → Database**
 3. Under **Connection string**, select **URI** mode
@@ -221,16 +235,17 @@ npx prisma migrate dev --name <migration-name>
 Base URL: `http://localhost:3001/api`
 
 All responses follow this shape:
+
 ```json
 { "success": true, "data": <payload>, "error": "optional, only on failure" }
 ```
 
 ### Stories
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/stories` | Fetch the latest 50 stories, newest first |
-| `POST` | `/api/stories` | Share a new anonymous story |
+| Method | Endpoint                  | Description                                  |
+| ------ | ------------------------- | -------------------------------------------- |
+| `GET`  | `/api/stories`            | Fetch the latest 50 stories, newest first    |
+| `POST` | `/api/stories`            | Share a new anonymous story                  |
 | `POST` | `/api/stories/:id/sunein` | Increment the "maine suna" count for a story |
 
 ---
@@ -240,6 +255,7 @@ All responses follow this shape:
 Returns the 50 most recent stories.
 
 **Response `200`:**
+
 ```json
 {
   "success": true,
@@ -261,6 +277,7 @@ Returns the 50 most recent stories.
 Share a new anonymous story.
 
 **Request body:**
+
 ```json
 { "content": "Ghar ma koi bujhdaina, tara yeha bhanna paauchu..." }
 ```
@@ -268,6 +285,7 @@ Share a new anonymous story.
 - `content` is required, minimum 10 characters, maximum 500 characters.
 
 **Response `201`:**
+
 ```json
 {
   "success": true,
@@ -281,6 +299,7 @@ Share a new anonymous story.
 ```
 
 **Response `400` (validation failure):**
+
 ```json
 {
   "success": false,
@@ -296,6 +315,7 @@ Share a new anonymous story.
 Acknowledge a story ("Maine suna" — I heard you). No request body needed.
 
 **Response `200`:**
+
 ```json
 {
   "success": true,
@@ -309,6 +329,7 @@ Acknowledge a story ("Maine suna" — I heard you). No request body needed.
 ```
 
 **Response `404` (story not found):**
+
 ```json
 {
   "success": false,
@@ -336,74 +357,6 @@ To update the docs, edit the JSDoc comments directly above each route definition
 
 ---
 
-## Key Design Decisions
-
-### Singleton Prisma Client (`lib/prisma.ts`)
-
-In development with `ts-node-dev`, hot reloads create new module instances on every file change. Without the singleton pattern, this would exhaust the Supabase connection pool. The pattern:
-
-```ts
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
-```
-
-### Prisma + PgBouncer Adapter
-
-Supabase uses PgBouncer for connection pooling. Prisma's default TCP connection handling conflicts with this. The fix is using `@prisma/adapter-pg` with a `pg.Pool` and manually stripping `sslmode` from the URL (since `pg` v8 interprets `sslmode=require` as `verify-full`, which fails against Supabase's self-signed cert).
-
-### SSL Handling
-
-```ts
-ssl: { rejectUnauthorized: false }
-```
-
-This is set on the `pg.Pool` directly so the SSL connection works with Supabase's certificate without needing to strip query parameters for every environment.
-
-### Two Database URLs
-
-| Variable | Port | Used By |
-|---|---|---|
-| `DATABASE_URL` | 6543 | App at runtime (through PgBouncer) |
-| `DIRECT_URL` | 5432 | Prisma migrations (bypasses PgBouncer) |
-
-This is a Supabase-specific requirement — PgBouncer doesn't support the extended query protocol that migrations use.
-
-### `prisma db push` over Migrations
-
-During hackathon/development, `db push` is used instead of `prisma migrate dev`. This syncs the schema to the DB without generating migration files. Switch to `prisma migrate dev` before any production deployment.
-
-### Zod at the Boundary
-
-Validation is applied at the controller level using Zod's `safeParse`. This means TypeScript types are inferred from the schema (`StoryInput = z.infer<typeof storySchema>`), keeping validation and types in sync automatically.
-
-### Language Policy
-
-All user-facing strings — error messages, Swagger descriptions, seed data — use culturally grounded codemixed language. No clinical mental health vocabulary anywhere in the codebase. This is enforced in `CLAUDE.md`.
-
----
-
-## What Still Needs To Be Done
-
-### High Priority
-- [ ] **Frontend integration** — Connect the React/Vite frontend to these endpoints
-- [ ] **Rate limiting** — Add `express-rate-limit` on `POST /stories` to prevent spam
-- [ ] **Content moderation** — Basic keyword filter or Claude API call before saving stories
-
-### Future Features (per product roadmap)
-- [ ] **Aangan Bot** — Claude-powered witness/validator bot (non-advisory, culturally fluent)
-- [ ] **Mood tracker** — Daily check-in feature with `Mood` model
-- [ ] **Didi Circles** — Community circles (currently mockup-only per `CLAUDE.md` rules)
-- [ ] **Pagination** — Replace `take: 50` with cursor-based pagination as content grows
-
-### Before Production
-- [ ] Switch `prisma db push` to `prisma migrate deploy` with tracked migration files
-- [ ] Add request logging middleware (e.g. `morgan`)
-- [ ] Set `NODE_ENV=production` and verify singleton pattern works correctly
-- [ ] Add a health-check endpoint (`GET /health`)
-
----
-
 ## Scripts Reference
 
 ```bash
@@ -412,9 +365,3 @@ npm run seed    # Seed the database with sample stories
 ```
 
 ---
-
-## Project Context
-
-This backend is part of **Chhaya**, a women-first South Asian mental health platform built for South Asian women in their home countries and the diaspora. The full platform vision includes Meri Katha (this API), an Aangan Bot, a mood tracker, and Didi Circles.
-
-See `CLAUDE.md` at the project root for the full set of cultural rules, naming conventions, and scope boundaries.
