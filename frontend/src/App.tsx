@@ -41,10 +41,12 @@ export default function App() {
           <Route path="/circles/:slug" element={<ProtectedRoute><CirclePage /></ProtectedRoute>} />
           <Route path="/feed/:id" element={<ProtectedRoute><StoryDetail /></ProtectedRoute>} />
           <Route path="/feed" element={<ProtectedRoute><Stories /></ProtectedRoute>} />
+          <Route path="/stories" element={<ProtectedRoute><Stories /></ProtectedRoute>} />
           <Route path="/story" element={<ProtectedRoute><Feed /></ProtectedRoute>} />
           <Route path="/sahara" element={<ProtectedRoute><Sahara /></ProtectedRoute>} />
           <Route path="/bot" element={<ProtectedRoute><Bot /></ProtectedRoute>} />
           <Route path="/diyo" element={<ProtectedRoute><Diyo /></ProtectedRoute>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <MoodCheckInGate />
         <SOSButton />
