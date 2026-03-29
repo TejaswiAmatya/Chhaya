@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { Landing } from './pages/Landing'
 import { Login } from './pages/Login'
@@ -11,8 +11,16 @@ import { Diyo } from './pages/Diyo'
 import { StoryDetail } from './pages/StoryDetail'
 import { CirclePage } from './pages/CirclePage'
 import { SOSButton } from './components/ui/SOSButton'
+import { MoodCheckIn } from './components/MoodCheckIn'
 import { LangProvider } from './context/LangContext'
 import type { ReactNode } from 'react'
+
+function MoodCheckInGate() {
+  const { user, loading } = useAuth()
+  const { pathname } = useLocation()
+  if (loading || !user || pathname !== '/feed') return null
+  return <MoodCheckIn />
+}
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth()
@@ -38,6 +46,7 @@ export default function App() {
           <Route path="/bot" element={<ProtectedRoute><Bot /></ProtectedRoute>} />
           <Route path="/diyo" element={<ProtectedRoute><Diyo /></ProtectedRoute>} />
         </Routes>
+        <MoodCheckInGate />
         <SOSButton />
       </BrowserRouter>
       </LangProvider>

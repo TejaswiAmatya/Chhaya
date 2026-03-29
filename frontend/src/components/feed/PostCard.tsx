@@ -4,16 +4,17 @@ import type { Story } from '../../types/feed'
 import { circles, relativeTime } from '../../data/mockStories'
 import { useLang, translationCache } from '../../context/LangContext'
 import { useAuth } from '../../context/AuthContext'
+import { AudioPlayer } from '../ui/AudioPlayer'
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
 
-async function fetchTranslation(text: string, cacheKey: string): Promise<string> {
+async function fetchTranslation(text: string, cacheKey: string, targetLang: 'en' | 'ne'): Promise<string> {
   if (translationCache.has(cacheKey)) return translationCache.get(cacheKey)!
   const res = await fetch(`${API}/api/translate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, targetLang }),
   })
   const data = await res.json()
   const translated: string = data.success ? data.data.translatedText : text
@@ -35,25 +36,28 @@ export function PostCard({ story, onDelete }: { story: Story; onDelete?: (id: st
 
   const circle = circles.find((c) => c.id === story.circleId)
 
+  // Auto-translate whenever lang changes — works both directions
   useEffect(() => {
-    if (lang !== 'en') return
-    if (translationCache.has(story.id)) {
-      setTranslatedBody(translationCache.get(story.id)!)
+    const hasDevanagari = /[\u0900-\u097F]/.test(story.body)
+    // Only translate if needed: Nepali text when EN selected, or English text when NE selected
+    const needsTranslation = (lang === 'en' && hasDevanagari) || (lang === 'ne' && !hasDevanagari)
+    if (!needsTranslation) { setTranslatedBody(null); return }
+
+    const cacheKey = `${story.id}-${lang}`
+    if (translationCache.has(cacheKey)) {
+      setTranslatedBody(translationCache.get(cacheKey)!)
       return
     }
     setTranslating(true)
-    fetchTranslation(story.body, story.id)
+    fetchTranslation(story.body, cacheKey, lang)
       .then(setTranslatedBody)
       .finally(() => setTranslating(false))
   }, [lang, story.id, story.body])
 
-  const displayBody = lang === 'en' ? (translatedBody ?? story.body) : story.body
-  const displayTitle =
-    lang === 'en' && translatedBody
-      ? translatedBody.length > 60
-        ? translatedBody.slice(0, 60) + '...'
-        : translatedBody
-      : story.title
+  const displayBody = translatedBody ?? story.body
+  const displayTitle = translatedBody
+    ? translatedBody.length > 60 ? translatedBody.slice(0, 60) + '...' : translatedBody
+    : story.title
 
   async function handleSunein(e: React.MouseEvent<HTMLButtonElement>) {
     if (listened) return
@@ -121,6 +125,14 @@ export function PostCard({ story, onDelete }: { story: Story; onDelete?: (id: st
         <h3 className={`font-serif font-bold text-[15px] text-ink leading-tight mt-1.5 line-clamp-2 group-hover:text-sindoor transition-colors ${translating ? 'animate-pulse opacity-60' : ''}`}>
           {displayTitle}
         </h3>
+
+        {/* Audio player */}
+        {story.audioBase64 && (
+          <div className="mt-1.5" onClick={(e) => e.preventDefault()}>
+            <AudioPlayer src={story.audioBase64} />
+          </div>
+        )}
+
         <p className={`text-xs text-textBody leading-relaxed mt-1 line-clamp-3 ${translating ? 'animate-pulse opacity-60' : ''}`}>
           {translating ? 'Anuvad gardai...' : displayBody}
         </p>
