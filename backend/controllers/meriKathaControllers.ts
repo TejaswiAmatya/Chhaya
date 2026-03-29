@@ -6,7 +6,11 @@ import { commentSchema } from "../schema/commentSchema";
 import { translateSchema } from "../schema/translateSchema";
 import { checkStoryContent } from "../src/storyContentCheck";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+function getGroq(): Groq | null {
+  const key = process.env.GROQ_API_KEY?.trim();
+  if (!key) return null;
+  return new Groq({ apiKey: key });
+}
 
 const VALID_THEMES = [
   "harassment",
@@ -275,6 +279,15 @@ export const translateText = async (req: Request, res: Response) => {
   }
 
   try {
+    const groq = getGroq();
+    if (!groq) {
+      return res.status(503).json({
+        success: false,
+        data: null,
+        error: "Translate service ahile available chaina — server maa GROQ_API_KEY set garnus.",
+      });
+    }
+
     const { text, targetLang } = parsed.data;
     const prompt =
       targetLang === "en"
