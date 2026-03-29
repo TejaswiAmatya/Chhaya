@@ -3,7 +3,12 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useLang } from "../../context/LangContext";
 
-export function Topbar() {
+export function Topbar({
+  onCreateClick,
+}: {
+  /** If set (e.g. on /feed), opens the same story composer dialog as the inline trigger */
+  onCreateClick?: () => void;
+}) {
   const { logout } = useAuth();
   const { lang, toggle } = useLang();
   const navigate = useNavigate();
@@ -15,6 +20,11 @@ export function Topbar() {
     document
       .getElementById("story-input")
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function handleCreateClick() {
+    if (onCreateClick) onCreateClick();
+    else scrollToInput();
   }
 
   return (
@@ -89,7 +99,8 @@ export function Topbar() {
 
         {/* Create button */}
         <button
-          onClick={scrollToInput}
+          type="button"
+          onClick={handleCreateClick}
           className="bg-ink text-pageBg rounded-full px-3 py-1 text-xs font-semibold hover:opacity-90 transition-opacity flex items-center gap-1"
         >
           <span className="text-sm leading-none">+</span>

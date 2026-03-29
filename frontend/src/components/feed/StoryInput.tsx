@@ -1,13 +1,34 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLang } from "../../context/LangContext";
+import { THEMES } from "../../data/themes";
+import type { ThemeValue } from "../../data/themes";
+import { circles } from "../../data/mockStories";
 
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
 
-export function StoryInput({ onSubmit }: { onSubmit: (text: string) => void }) {
+export function StoryInput({
+  onSubmit,
+  circleId,
+  open: controlledOpen,
+  onOpenChange,
+}: {
+  onSubmit: (text: string, theme: ThemeValue) => void;
+  circleId?: string;
+  /** When set, modal open state is controlled (e.g. Topbar Create button) */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}) {
   const { lang } = useLang();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = (next: boolean) => {
+    onOpenChange?.(next);
+    if (controlledOpen === undefined) setInternalOpen(next);
+  };
   const [title, setTitle] = useState("");
+  const [theme, setTheme] = useState<ThemeValue | "">("");
+  const [selectedCircle, setSelectedCircle] = useState<string>(circleId ?? "");
   const [error, setError] = useState<string | null>(null);
   const [showResources, setShowResources] = useState(false);
   const [flagWarning, setFlagWarning] = useState<string | null>(null);
@@ -35,6 +56,8 @@ export function StoryInput({ onSubmit }: { onSubmit: (text: string) => void }) {
   function close() {
     setOpen(false);
     setTitle("");
+    setTheme("");
+    setSelectedCircle(circleId ?? "");
     setError(null);
     setShowResources(false);
     setFlagWarning(null);
@@ -43,10 +66,23 @@ export function StoryInput({ onSubmit }: { onSubmit: (text: string) => void }) {
 
   async function handleSubmit() {
     const body = editorRef.current?.innerText?.trim() ?? "";
-    const fullContent = title.trim() ? `${title.trim()}\n\n${body}` : body;
+
+    if (!title.trim()) {
+      setError(lang === "en" ? "Please add a title." : "Title lekhnus — aawashyak cha.");
+      return;
+    }
+    const fullContent = `${title.trim()}\n\n${body}`;
 
     if (fullContent.length < 10) {
       setError("Ali lambo lekhnus na — kamti ma 10 akshar chaincha");
+      return;
+    }
+    if (!theme) {
+      setError(
+        lang === "en"
+          ? "Please select a theme before sharing."
+          : "Theme छान्नुस् — share garna aghi.",
+      );
       return;
     }
 
@@ -60,7 +96,11 @@ export function StoryInput({ onSubmit }: { onSubmit: (text: string) => void }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ content: fullContent }),
+        body: JSON.stringify({
+          content: fullContent,
+          theme,
+          ...(selectedCircle ? { circleId: selectedCircle } : {}),
+        }),
       });
 
       const data = await res.json();
@@ -78,7 +118,7 @@ export function StoryInput({ onSubmit }: { onSubmit: (text: string) => void }) {
         return; // keep modal open to show nudge
       }
 
-      onSubmit(fullContent);
+      onSubmit(fullContent, theme as ThemeValue);
       close();
     } catch {
       setError("Server sanga connect huna sakena. Feri try garnus.");
@@ -103,7 +143,9 @@ export function StoryInput({ onSubmit }: { onSubmit: (text: string) => void }) {
           +
         </span>
         <span className="text-sm text-textMuted font-sans group-hover:text-textBody transition-colors">
-          {lang === 'en' ? "What's on your mind?" : 'Tapaiko katha share garnuhos...'}
+          {lang === "en"
+            ? "What's on your mind?"
+            : "Tapaiko katha share garnuhos..."}
         </span>
       </button>
 
@@ -131,15 +173,63 @@ export function StoryInput({ onSubmit }: { onSubmit: (text: string) => void }) {
               </button>
             </div>
 
-            {/* Title input */}
+            {/* Title input — required */}
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ek line ma — optional"
+              placeholder={lang === "en" ? "Title — required" : "Title — aawashyak cha"}
               maxLength={120}
               className="px-5 py-3 text-sm font-sans text-ink placeholder:text-textMuted/60 bg-transparent border-b border-sand/30 outline-none"
             />
+
+            {/* Theme + Circle selectors row */}
+            <div className="flex border-b border-sand/30">
+              {/* Theme — required */}
+              <div className="flex-1 px-4 py-2.5 flex items-center gap-2 border-r border-sand/30">
+                <span className="text-[10px] font-semibold text-textMuted uppercase tracking-wider shrink-0">
+                  {lang === "en" ? "Theme *" : "विषय *"}
+                </span>
+                <select
+                  value={theme}
+                  onChange={(e) => setTheme(e.target.value as ThemeValue | "")}
+                  className={`flex-1 bg-transparent text-xs font-sans outline-none cursor-pointer ${
+                    theme ? "text-ink" : "text-textMuted"
+                  }`}
+                >
+                  <option value="" disabled>
+                    {lang === "en" ? "— pick one —" : "— छान्नुस् —"}
+                  </option>
+                  {THEMES.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {lang === "en" ? t.en : t.ne}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Circle — optional */}
+              <div className="flex-1 px-4 py-2.5 flex items-center gap-2">
+                <span className="text-[10px] font-semibold text-textMuted uppercase tracking-wider shrink-0">
+                  {lang === "en" ? "Circle" : "सर्कल"}
+                </span>
+                <select
+                  value={selectedCircle}
+                  onChange={(e) => setSelectedCircle(e.target.value)}
+                  className={`flex-1 bg-transparent text-xs font-sans outline-none cursor-pointer ${
+                    selectedCircle ? "text-ink" : "text-textMuted"
+                  }`}
+                >
+                  <option value="">
+                    {lang === "en" ? "— none —" : "— छैन —"}
+                  </option>
+                  {circles.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      c/{c.id} · {lang === "en" ? c.enName : c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
             {/* Toolbar */}
             <div className="flex items-center gap-0.5 px-4 py-2 border-b border-sand/30 bg-feedBg/60">

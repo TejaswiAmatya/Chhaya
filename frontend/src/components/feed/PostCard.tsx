@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import type { Story } from '../../types/feed'
 import { circles, relativeTime } from '../../data/mockStories'
 import { useLang, translationCache } from '../../context/LangContext'
+import { useAuth } from '../../context/AuthContext'
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
 
@@ -20,11 +21,14 @@ async function fetchTranslation(text: string, cacheKey: string): Promise<string>
   return translated
 }
 
-export function PostCard({ story }: { story: Story }) {
+export function PostCard({ story, onDelete }: { story: Story; onDelete?: (id: string) => void }) {
   const { lang } = useLang()
+  const { user } = useAuth()
   const [listened, setListened] = useState(false)
   const [ripplePos, setRipplePos] = useState<{ x: number; y: number } | null>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const [translatedBody, setTranslatedBody] = useState<string | null>(null)
   const [translating, setTranslating] = useState(false)
@@ -66,6 +70,27 @@ export function PostCard({ story }: { story: Story }) {
       console.error('Error incrementing sunein:', err)
     }
   }
+
+  async function handleDelete(e: React.MouseEvent) {
+    e.preventDefault()
+    if (!confirmDelete) { setConfirmDelete(true); return }
+    setDeleting(true)
+    try {
+      await fetch(`${API}/api/stories/${story.id}`, { method: 'DELETE', credentials: 'include' })
+      onDelete?.(story.id)
+    } catch {
+      setDeleting(false)
+      setConfirmDelete(false)
+    }
+  }
+
+  const isOwner = !!user && story.userId === user.userId
+
+  useEffect(() => {
+    if (!confirmDelete) return
+    const t = setTimeout(() => setConfirmDelete(false), 3000)
+    return () => clearTimeout(t)
+  }, [confirmDelete])
 
   return (
     <article className="bg-pageBg rounded-xl border border-sand p-3 hover:border-textMuted transition-colors duration-150">
@@ -113,7 +138,7 @@ export function PostCard({ story }: { story: Story }) {
       )}
 
       {/* Action bar */}
-      <div className="flex items-center gap-2 mt-2 flex-wrap">
+      <div className="flex items-center gap-2 mt-2 flex-wrap" onClick={(e) => e.preventDefault()}>
         <Link
           to={`/feed/${story.id}`}
           state={{ story }}
@@ -143,6 +168,21 @@ export function PostCard({ story }: { story: Story }) {
             ? (lang === 'en' ? 'Heard ✓' : 'सुनिएको ✓')
             : (lang === 'en' ? '🙏 I Heard You' : '🙏 Maile Sunein')}
         </button>
+
+        {isOwner && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={deleting}
+            className={`ml-auto flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold transition-colors disabled:opacity-40 ${
+              confirmDelete
+                ? 'bg-sindoor/10 text-sindoor border border-sindoor/30'
+                : 'text-textMuted hover:text-sindoor hover:bg-sindoor/10'
+            }`}
+          >
+            {deleting ? '…' : confirmDelete ? (lang === 'en' ? 'Sure?' : 'Pakka?') : '🗑'}
+          </button>
+        )}
       </div>
     </article>
   )
