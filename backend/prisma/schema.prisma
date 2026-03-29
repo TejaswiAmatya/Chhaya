@@ -18,11 +18,26 @@ model User {
 }
 
 model Story {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   content     String
-  isAnonymous Boolean  @default(true)
-  status      String   @default("APPROVED") // APPROVED | DELETED
-  flagCode    String?                        // CRISIS_CONTENT | ABUSIVE_CONTENT
-  suneinCount Int      @default(0)
-  createdAt   DateTime @default(now())
+  isAnonymous Boolean   @default(true)
+  status      String    @default("APPROVED") // APPROVED | DELETED
+  flagCode    String?                         // CRISIS_CONTENT | ABUSIVE_CONTENT
+  suneinCount Int       @default(0)
+  createdAt   DateTime  @default(now())
+  comments    Comment[]
+}
+
+model Comment {
+  id          String    @id @default(cuid())
+  content     String
+  isAnonymous Boolean   @default(true)
+  storyId     String
+  parentId    String?
+  likeCount   Int       @default(0)
+  suneinCount Int       @default(0)
+  story       Story     @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  parent      Comment?  @relation("Replies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     Comment[] @relation("Replies")
+  createdAt   DateTime  @default(now())
 }

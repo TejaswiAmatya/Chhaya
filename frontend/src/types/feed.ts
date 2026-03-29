@@ -11,6 +11,18 @@ export interface Flair {
   text: string
 }
 
+export interface Comment {
+  id: string
+  content: string
+  isAnonymous: boolean
+  storyId: string
+  parentId: string | null
+  likeCount: number
+  suneinCount: number
+  createdAt: string
+  replies?: Comment[]
+}
+
 export interface Story {
   id: string
   circleId: string

@@ -3,6 +3,12 @@ import {
   getStories,
   setStories,
   suneinStory,
+  getTrending,
+  getComments,
+  createComment,
+  likeComment,
+  suneinComment,
+  translateText,
 } from "../controllers/meriKathaControllers";
 
 const meriKathaRouter = express.Router();
@@ -160,5 +166,12 @@ meriKathaRouter.post("/stories", setStories);
  *                   example: "Yo katha ferina — sायद delete bhaisakyo"
  */
 meriKathaRouter.post("/stories/:id/sunein", suneinStory);
+
+meriKathaRouter.get("/stories/trending", getTrending);
+meriKathaRouter.get("/stories/:id/comments", getComments);
+meriKathaRouter.post("/stories/:id/comments", createComment);
+meriKathaRouter.post("/comments/:id/like", likeComment);
+meriKathaRouter.post("/comments/:id/sunein", suneinComment);
+meriKathaRouter.post("/translate", translateText);
 
 export default meriKathaRouter;

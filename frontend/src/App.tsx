@@ -8,7 +8,9 @@ import { Stories } from './pages/Stories'
 import { Sahara } from './pages/Sahara'
 import { Bot } from './pages/Bot'
 import { Diyo } from './pages/Diyo'
+import { StoryDetail } from './pages/StoryDetail'
 import { SOSButton } from './components/ui/SOSButton'
+import { LangProvider } from './context/LangContext'
 import type { ReactNode } from 'react'
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -21,11 +23,13 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 export default function App() {
   return (
     <AuthProvider>
+      <LangProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/feed/:id" element={<ProtectedRoute><StoryDetail /></ProtectedRoute>} />
           <Route path="/feed" element={<ProtectedRoute><Stories /></ProtectedRoute>} />
           <Route path="/story" element={<ProtectedRoute><Feed /></ProtectedRoute>} />
           <Route path="/sahara" element={<ProtectedRoute><Sahara /></ProtectedRoute>} />
@@ -34,6 +38,7 @@ export default function App() {
         </Routes>
         <SOSButton />
       </BrowserRouter>
+      </LangProvider>
     </AuthProvider>
   )
 }
