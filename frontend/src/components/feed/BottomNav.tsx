@@ -8,11 +8,12 @@ const items = [
 
 export function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-14 bg-pageBg border-t border-sand flex items-center justify-around z-40 md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 h-14 bg-pageBg border-t border-sand flex items-center justify-around z-40 md:hidden pointer-events-none">
       {items.map((item) => (
         <button
           key={item.label}
-          className={`flex flex-col items-center gap-0.5 ${
+          type="button"
+          className={`pointer-events-auto flex flex-col items-center gap-0.5 ${
             item.active ? 'text-ink' : 'text-textMuted'
           }`}
         >

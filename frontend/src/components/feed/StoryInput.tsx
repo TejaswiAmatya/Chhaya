@@ -68,7 +68,11 @@ export function StoryInput({
     const body = editorRef.current?.innerText?.trim() ?? "";
 
     if (!title.trim()) {
-      setError(lang === "en" ? "Please add a title." : "Title lekhnus — aawashyak cha.");
+      setError(
+        lang === "en"
+          ? "Please add a title."
+          : "Title lekhnus — aawashyak cha.",
+      );
       return;
     }
     const fullContent = `${title.trim()}\n\n${body}`;
@@ -178,7 +182,9 @@ export function StoryInput({
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={lang === "en" ? "Title — required" : "Title — aawashyak cha"}
+              placeholder={
+                lang === "en" ? "Title — required" : "Title — aawashyak cha"
+              }
               maxLength={120}
               className="px-5 py-3 text-sm font-sans text-ink placeholder:text-textMuted/60 bg-transparent border-b border-sand/30 outline-none"
             />

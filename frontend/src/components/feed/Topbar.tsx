@@ -28,9 +28,9 @@ export function Topbar({
   }
 
   return (
-    <header className="sticky top-0 z-40 h-12 bg-pageBg/90 backdrop-blur-sm border-b border-sand flex items-center justify-between px-4 gap-3">
-      {/* Logo */}
-      <Link to="/" className="flex items-center gap-2 shrink-0">
+    <header className="sticky top-0 z-40 h-12 bg-pageBg/90 backdrop-blur-sm border-b border-sand flex items-center justify-between px-4 gap-3 pointer-events-none">
+      {/* Logo — pointer-events-auto so taps pass through empty header chrome to feed below */}
+      <Link to="/" className="pointer-events-auto flex items-center gap-2 shrink-0">
         <div className="w-8 h-8 rounded-lg bg-sindoor flex items-center justify-center">
           <span className="text-white font-serif font-bold text-sm">छ</span>
         </div>
@@ -40,7 +40,7 @@ export function Topbar({
       </Link>
 
       {/* Search bar */}
-      <div className="relative flex-1 max-w-md hidden md:block">
+      <div className="relative flex-1 max-w-md hidden md:block pointer-events-auto">
         <span
           className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-textMuted"
           aria-hidden
@@ -80,7 +80,7 @@ export function Topbar({
       </div>
 
       {/* Right cluster */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-2 shrink-0 pointer-events-auto">
         {/* Language toggle */}
         <button
           onClick={toggle}

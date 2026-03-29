@@ -37,4 +37,6 @@ export interface Story {
   createdAt: Date;
   theme: string;
   userId?: string;
+  /** Set by API when you are logged in — preferred over comparing userId client-side */
+  isOwner?: boolean;
 }

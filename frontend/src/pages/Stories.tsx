@@ -21,6 +21,7 @@ interface ApiStory {
   theme: string;
   circleId: string;
   userId?: string;
+  isOwner?: boolean;
   _count?: { comments: number };
 }
 
@@ -37,6 +38,7 @@ function mapApiStory(s: ApiStory): Story {
     createdAt: new Date(s.createdAt),
     theme: s.theme ?? "general",
     userId: s.userId,
+    isOwner: s.isOwner,
   };
 }
 
@@ -76,7 +78,7 @@ export function Stories() {
   }, [isTrending]);
 
   function handleDelete(id: string) {
-    setApiStories((prev) => prev.filter((s) => s.id !== id))
+    setApiStories((prev) => prev.filter((s) => s.id !== id));
   }
 
   async function handleNewStory(text: string, theme: ThemeValue) {

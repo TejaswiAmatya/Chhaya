@@ -72,7 +72,10 @@ export function Feed() {
               Anonymous story space
             </span>
             <button
-              onClick={async () => { await logout(); navigate("/login"); }}
+              onClick={async () => {
+                await logout();
+                navigate("/login");
+              }}
               className="text-xs text-textMuted hover:text-sindoor font-sans transition-colors"
             >
               Niskinus

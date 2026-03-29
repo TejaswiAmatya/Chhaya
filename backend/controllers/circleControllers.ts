@@ -57,7 +57,12 @@ export const getCircleStories = async (req: Request, res: Response) => {
       take: 50,
       include: { _count: { select: { comments: true } } },
     });
-    res.json({ success: true, data: stories });
+    const viewerId = req.user?.sub ?? null;
+    const data = stories.map((s) => ({
+      ...s,
+      isOwner: viewerId !== null && s.userId === viewerId,
+    }));
+    res.json({ success: true, data });
   } catch {
     res.status(500).json({ success: false, data: null, error: "Kei bhayo yaar, feri try garna hai" });
   }

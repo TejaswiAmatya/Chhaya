@@ -23,6 +23,7 @@ export const getStories = async (req: Request, res: Response) => {
     themeParam && (VALID_THEMES as readonly string[]).includes(themeParam)
       ? themeParam
       : undefined;
+  const viewerId = req.user?.sub ?? null;
   try {
     const stories = await prisma.story.findMany({
       where: { status: "APPROVED", ...(theme ? { theme } : {}) },
@@ -30,7 +31,11 @@ export const getStories = async (req: Request, res: Response) => {
       take: 50,
       include: { _count: { select: { comments: true } } },
     });
-    res.json({ success: true, data: stories });
+    const data = stories.map((s) => ({
+      ...s,
+      isOwner: viewerId !== null && s.userId === viewerId,
+    }));
+    res.json({ success: true, data });
   } catch {
     res.status(500).json({
       success: false,
@@ -72,7 +77,40 @@ export const setStories = async (req: Request, res: Response) => {
     const story = await prisma.story.create({
       data: { ...parsed.data, status: "APPROVED", userId },
     });
-    res.status(201).json({ success: true, data: story, flags: check.flags });
+    res.status(201).json({
+      success: true,
+      data: { ...story, isOwner: true },
+      flags: check.flags,
+    });
+  } catch {
+    res.status(500).json({
+      success: false,
+      data: null,
+      error: "Kei bhayo yaar, feri try garna hai",
+    });
+  }
+};
+
+export const getStoryById = async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const viewerId = req.user?.sub ?? null;
+  try {
+    const story = await prisma.story.findFirst({
+      where: { id, status: "APPROVED" },
+      include: { _count: { select: { comments: true } } },
+    });
+    if (!story) {
+      return res
+        .status(404)
+        .json({ success: false, data: null, error: "Yo katha fhelaparena." });
+    }
+    res.json({
+      success: true,
+      data: {
+        ...story,
+        isOwner: viewerId !== null && story.userId === viewerId,
+      },
+    });
   } catch {
     res.status(500).json({
       success: false,
